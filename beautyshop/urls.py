@@ -4,15 +4,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 
+
 def home(request):
     return JsonResponse({
-        "message": "BeautyShop API is running ",
+        "message": "BeautyShop API is running 🚀",
         "status": "success",
         "endpoints": {
             "auth": "/api/auth/",
             "products": "/api/products/",
             "orders": "/api/orders/",
-            "payments": "/api/payments/",
+            "mpesa": "/api/mpesa/",
             "dashboard": "/api/dashboard/"
         }
     })
@@ -24,8 +25,9 @@ urlpatterns = [
     path("api/auth/", include("users.urls")),
     path("api/products/", include("products.urls")),
     path("api/orders/", include("orders.urls")),
-    path("api/payments/", include("payments.urls")),
+    path("api/mpesa/", include("payments.urls")),
     path("api/dashboard/", include("dashboard.urls")),
 ]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

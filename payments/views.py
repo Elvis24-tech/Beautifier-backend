@@ -1,7 +1,6 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-
 from .mpesa import stk_push
 
 
@@ -12,47 +11,23 @@ def stk_push_view(request):
     amount = request.data.get("amount")
 
     if not phone or not amount:
-        return Response(
-            {"error": "Phone and amount are required"},
-            status=400
-        )
+        return Response({"error": "Phone and amount required"}, status=400)
 
-    try:
-        # normalize phone (important for Kenya)
-        if phone.startswith("0"):
-            phone = "254" + phone[1:]
+    if phone.startswith("0"):
+        phone = "254" + phone[1:]
 
-        response = stk_push(
-            phone=phone,
-            amount=int(amount),
-            account_reference="BeautyShop",
-            transaction_desc="BeautyShop Payment"
-        )
+    response = stk_push(
+        phone=phone,
+        amount=int(amount),
+        account_reference="BeautyShop",
+        transaction_desc="Payment"
+    )
 
-        return Response(response)
-
-    except Exception as e:
-        return Response(
-            {"error": str(e)},
-            status=500
-        )
+    return Response(response)
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def mpesa_callback(request):
-    data = request.data
-
-    print("\n🔥 M-PESA CALLBACK RECEIVED")
-    print(data)
-
-    try:
-        result = data.get("Body", {}).get("stkCallback", {})
-
-        print("ResultCode:", result.get("ResultCode"))
-        print("CheckoutRequestID:", result.get("CheckoutRequestID"))
-
-    except Exception as e:
-        print("Callback parse error:", str(e))
-
-    return Response({"message": "Callback received"})
+    print("🔥 M-PESA CALLBACK:", request.data)
+    return Response({"ResultCode": 0, "ResultDesc": "Accepted"})
