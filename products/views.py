@@ -5,6 +5,6 @@ from .serializers import ProductSerializer
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all().order_by("-created_at")
+    queryset = Product.objects.all().order_by("-id")
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
