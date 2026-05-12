@@ -1,7 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
@@ -9,15 +10,46 @@ from products.models import Product
 
 
 class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.all().order_by("-created_at")
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
 
+    # 🔥 Allow frontend access without login
+    permission_classes = [AllowAny]
+
+    # GET ALL ORDERS
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).order_by("-created_at")
+        return Order.objects.all().order_by("-created_at")
 
-    # CREATE ORDER (checkout)
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    # CREATE ORDER
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        order = Order.objects.create(
+            total_price=data.get("total", 0),
+            phone=data.get("phone", "")
+        )
+
+        items = data.get("items", [])
+
+        for item in items:
+            try:
+                product = Product.objects.get(id=item["id"])
+
+                quantity = item.get("quantity", 1)
+
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=quantity,
+                    price=product.price * quantity
+                )
+
+            except Product.DoesNotExist:
+                continue
+
+        serializer = self.get_serializer(order)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     # ADD ITEM TO ORDER
     @action(detail=True, methods=["post"])
@@ -29,8 +61,12 @@ class OrderViewSet(ModelViewSet):
 
         try:
             product = Product.objects.get(id=product_id)
+
         except Product.DoesNotExist:
-            return Response({"error": "Product not found"}, status=404)
+            return Response(
+                {"error": "Product not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         item = OrderItem.objects.create(
             order=order,
@@ -39,11 +75,13 @@ class OrderViewSet(ModelViewSet):
             price=product.price * quantity
         )
 
-        # update total
+        # UPDATE TOTAL
         order.total_price += item.price
         order.save()
 
-        return Response({"message": "Item added to order"})
+        return Response({
+            "message": "Item added to order"
+        })
 
     # REMOVE ITEM
     @action(detail=True, methods=["post"])
@@ -53,12 +91,23 @@ class OrderViewSet(ModelViewSet):
         item_id = request.data.get("item_id")
 
         try:
-            item = OrderItem.objects.get(id=item_id, order=order)
-        except OrderItem.DoesNotExist:
-            return Response({"error": "Item not found"}, status=404)
+            item = OrderItem.objects.get(
+                id=item_id,
+                order=order
+            )
 
+        except OrderItem.DoesNotExist:
+            return Response(
+                {"error": "Item not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # UPDATE TOTAL
         order.total_price -= item.price
         order.save()
+
         item.delete()
 
-        return Response({"message": "Item removed"})
+        return Response({
+            "message": "Item removed"
+        })
