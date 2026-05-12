@@ -3,15 +3,20 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 🔐 ENVIRONMENT VARIABLES
+# =========================
+# SECURITY
+# =========================
 SECRET_KEY = config("SECRET_KEY")
 
-DEBUG = config("DEBUG", cast=bool)
+DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = ["*"]
 
+# =========================
+# INSTALLED APPS
+# =========================
 INSTALLED_APPS = [
-    # DJANGO
+    # DJANGO APPS
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -19,12 +24,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # THIRD PARTY
+    # THIRD PARTY APPS
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
 
-    # APPS
+    # LOCAL APPS
     "users",
     "products",
     "orders",
@@ -32,7 +37,11 @@ INSTALLED_APPS = [
     "dashboard",
 ]
 
+# =========================
+# MIDDLEWARE
+# =========================
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -43,26 +52,37 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'beautyshop.urls'
+# =========================
+# URLS
+# =========================
+ROOT_URLCONF = "beautyshop.urls"
 
+# =========================
+# TEMPLATES
+# =========================
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'beautyshop.wsgi.application'
+# =========================
+# WSGI
+# =========================
+WSGI_APPLICATION = "beautyshop.wsgi.application"
 
-# 🗄️ DATABASE (ENV VERSION)
+# =========================
+# DATABASE
+# =========================
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -74,34 +94,59 @@ DATABASES = {
     }
 }
 
+# =========================
+# PASSWORD VALIDATION
+# =========================
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+# =========================
+# INTERNATIONALIZATION
+# =========================
+LANGUAGE_CODE = "en-us"
+
+TIME_ZONE = "UTC"
+
 USE_I18N = True
+
 USE_TZ = True
 
-STATIC_URL = 'static/'
+# =========================
+# STATIC FILES
+# =========================
+STATIC_URL = "static/"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# =========================
+# MEDIA FILES
+# =========================
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-# 🌐 CORS
-CORS_ALLOW_ALL_ORIGINS = True
+# =========================
+# DEFAULT PRIMARY KEY
+# =========================
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# 🔐 DRF CONFIG
+# =========================
+# CUSTOM USER MODEL
+# =========================
+AUTH_USER_MODEL = "users.User"
+
+# =========================
+# DJANGO REST FRAMEWORK
+# =========================
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -111,11 +156,19 @@ REST_FRAMEWORK = {
     ),
 }
 
-AUTH_USER_MODEL = "users.User"
+# =========================
+# CORS SETTINGS
+# =========================
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+CORS_ALLOW_CREDENTIALS = True
 
+# =========================
+# MPESA SETTINGS
+# =========================
 MPESA_CONSUMER_KEY = config("MPESA_CONSUMER_KEY")
 MPESA_CONSUMER_SECRET = config("MPESA_CONSUMER_SECRET")
 MPESA_SHORTCODE = config("MPESA_SHORTCODE")
