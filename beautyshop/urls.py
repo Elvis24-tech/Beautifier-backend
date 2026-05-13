@@ -1,28 +1,41 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from django.conf import settings
 from django.conf.urls.static import static
-from django.http import JsonResponse
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 def home(request):
     return JsonResponse({
         "message": "BeautyShop API is running 🚀",
         "status": "success",
         "endpoints": {
-            "auth": "/api/auth/",
+            "token": "/api/token/",
+            "refresh": "/api/token/refresh/",
+            "me": "/api/auth/me/",
             "products": "/api/products/",
-            "orders": "/api/orders/",
-            "mpesa": "/api/mpesa/",
-            "dashboard": "/api/dashboard/"
+            "orders": "/api/orders/"
         }
     })
-
 
 urlpatterns = [
     path("", home),
     path("admin/", admin.site.urls),
-    path("api/auth/", include("users.urls")),
+
+    # =========================
+    # AUTH (JWT - FIXED)
+    # =========================
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+
+    # custom user endpoints
+    path("api/auth/", include("accounts.urls")),
+
+    # other apps
     path("api/products/", include("products.urls")),
     path("api/orders/", include("orders.urls")),
     path("api/mpesa/", include("payments.urls")),

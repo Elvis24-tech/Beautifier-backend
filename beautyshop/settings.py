@@ -7,16 +7,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # =========================
 SECRET_KEY = config("SECRET_KEY")
-
 DEBUG = config("DEBUG", default=True, cast=bool)
-
 ALLOWED_HOSTS = ["*"]
 
 # =========================
 # INSTALLED APPS
 # =========================
 INSTALLED_APPS = [
-    # DJANGO APPS
+    # DJANGO CORE
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -24,12 +22,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # THIRD PARTY APPS
+    # THIRD PARTY
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
 
     # LOCAL APPS
+    "accounts",
     "users",
     "products",
     "orders",
@@ -42,7 +41,7 @@ INSTALLED_APPS = [
 # =========================
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -98,39 +97,24 @@ DATABASES = {
 # PASSWORD VALIDATION
 # =========================
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 # =========================
 # INTERNATIONALIZATION
 # =========================
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
 # =========================
-# STATIC FILES
+# STATIC / MEDIA
 # =========================
 STATIC_URL = "static/"
-
-# =========================
-# MEDIA FILES
-# =========================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -145,7 +129,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 # =========================
-# DJANGO REST FRAMEWORK
+# REST FRAMEWORK
 # =========================
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -157,7 +141,7 @@ REST_FRAMEWORK = {
 }
 
 # =========================
-# CORS SETTINGS
+# CORS
 # =========================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -167,7 +151,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # =========================
-# MPESA SETTINGS
+# MPESA
 # =========================
 MPESA_CONSUMER_KEY = config("MPESA_CONSUMER_KEY")
 MPESA_CONSUMER_SECRET = config("MPESA_CONSUMER_SECRET")
