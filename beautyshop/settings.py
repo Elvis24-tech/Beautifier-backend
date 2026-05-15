@@ -3,8 +3,14 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
-DEBUG = config("DEBUG", default=True, cast=bool)
-ALLOWED_HOSTS = ["*"]
+
+DEBUG = config("DEBUG", default=False, cast=bool)
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com"
+]
 INSTALLED_APPS = [
     # DJANGO CORE
     "django.contrib.admin",
@@ -18,7 +24,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
-    "drf_spectacular",  
+    "drf_spectacular",
 
     # LOCAL APPS
     "accounts",
@@ -28,10 +34,14 @@ INSTALLED_APPS = [
     "payments",
     "dashboard",
 ]
+
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ STATIC FILES IN PROD
+
     "corsheaders.middleware.CorsMiddleware",
 
-    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -41,6 +51,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "beautyshop.urls"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -57,6 +68,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "beautyshop.wsgi.application"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -67,21 +79,28 @@ DATABASES = {
         "PORT": config("DB_PORT"),
     }
 }
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Africa/Nairobi"
 USE_I18N = True
 USE_TZ = True
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -91,6 +110,7 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "BeautyShop API",
     "DESCRIPTION": "E-commerce backend API (Auth, Products, Orders, Payments, M-Pesa, Dashboard)",
