@@ -25,17 +25,9 @@ def home(request):
 urlpatterns = [
     path("", home),
     path("admin/", admin.site.urls),
-
-    # =========================
-    # AUTH (JWT - FIXED)
-    # =========================
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-
-    # custom user endpoints
     path("api/auth/", include("accounts.urls")),
-
-    # other apps
     path("api/products/", include("products.urls")),
     path("api/orders/", include("orders.urls")),
     path("api/mpesa/", include("payments.urls")),
