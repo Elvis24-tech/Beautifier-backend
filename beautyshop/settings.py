@@ -2,17 +2,9 @@ from pathlib import Path
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# =========================
-# SECURITY
-# =========================
 SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = ["*"]
-
-# =========================
-# INSTALLED APPS
-# =========================
 INSTALLED_APPS = [
     # DJANGO CORE
     "django.contrib.admin",
@@ -26,6 +18,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
+    "drf_spectacular",  
 
     # LOCAL APPS
     "accounts",
@@ -35,10 +28,6 @@ INSTALLED_APPS = [
     "payments",
     "dashboard",
 ]
-
-# =========================
-# MIDDLEWARE
-# =========================
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
 
@@ -51,14 +40,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# =========================
-# URLS
-# =========================
 ROOT_URLCONF = "beautyshop.urls"
-
-# =========================
-# TEMPLATES
-# =========================
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -74,14 +56,7 @@ TEMPLATES = [
     },
 ]
 
-# =========================
-# WSGI
-# =========================
 WSGI_APPLICATION = "beautyshop.wsgi.application"
-
-# =========================
-# DATABASE
-# =========================
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -92,45 +67,21 @@ DATABASES = {
         "PORT": config("DB_PORT"),
     }
 }
-
-# =========================
-# PASSWORD VALIDATION
-# =========================
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
-
-# =========================
-# INTERNATIONALIZATION
-# =========================
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
-
-# =========================
-# STATIC / MEDIA
-# =========================
 STATIC_URL = "static/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
-
-# =========================
-# DEFAULT PRIMARY KEY
-# =========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# =========================
-# CUSTOM USER MODEL
-# =========================
 AUTH_USER_MODEL = "users.User"
-
-# =========================
-# REST FRAMEWORK
-# =========================
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -138,21 +89,24 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.AllowAny",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+SPECTACULAR_SETTINGS = {
+    "TITLE": "BeautyShop API",
+    "DESCRIPTION": "E-commerce backend API (Auth, Products, Orders, Payments, M-Pesa, Dashboard)",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_SETTINGS": {
+        "persistAuthorization": True,
+    },
 }
 
-# =========================
-# CORS
-# =========================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
-# =========================
-# MPESA
-# =========================
 MPESA_CONSUMER_KEY = config("MPESA_CONSUMER_KEY")
 MPESA_CONSUMER_SECRET = config("MPESA_CONSUMER_SECRET")
 MPESA_SHORTCODE = config("MPESA_SHORTCODE")
