@@ -9,7 +9,7 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    ".onrender.com"
+    ".onrender.com",
 ]
 INSTALLED_APPS = [
     # DJANGO CORE
@@ -36,11 +36,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware", 
+
     "django.middleware.security.SecurityMiddleware",
-
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ STATIC FILES IN PROD
-
-    "corsheaders.middleware.CorsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  
 
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -51,7 +50,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "beautyshop.urls"
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -66,9 +64,7 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = "beautyshop.wsgi.application"
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -86,7 +82,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
-
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Africa/Nairobi"
 USE_I18N = True
@@ -98,9 +93,9 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+WHITENOISE_MANIFEST_STRICT = False  
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
