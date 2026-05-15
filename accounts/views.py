@@ -1,50 +1,30 @@
-from django.contrib.auth import authenticate, get_user_model
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
+from .serializers import RegisterSerializer
 
 User = get_user_model()
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
-def login(request):
-    email = request.data.get("email")
-    password = request.data.get("password")
+def register(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "User created successfully"})
+    return Response(serializer.errors, status=400)
 
-    if not email or not password:
-        return Response(
-            {"error": "Email and password are required"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
 
-    user_obj = User.objects.filter(email=email).first()
-
-    if not user_obj:
-        return Response(
-            {"error": "Invalid credentials"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    user = authenticate(username=user_obj.username, password=password)
-
-    if user is None:
-        return Response(
-            {"error": "Invalid credentials"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    refresh = RefreshToken.for_user(user)
-
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def me(request):
+    user = request.user
     return Response({
-        "access": str(refresh.access_token),
-        "refresh": str(refresh),
-        "user": {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "is_admin": user.is_staff,
-        }
+        "id": user.id,
+        "email": user.email,
+        "username": user.username
     })
+
+
+# simple login is handled by JWT (/api/token/)
